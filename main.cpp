@@ -14,38 +14,18 @@ int cleaner(char * text);
 void record_of_pointers(char **pointers, char * text, int number_of_strcs, int len);
 void sort(char* * pointers);
 int comparator(char * str1, char * str2);
+void record_to_file(char ** pointers, FILE * file);
+int reversed_comparator(char * str1, char * str2);
+void reversed_sort(char ** pointers);
 
-
-int reversed_comparator(char * str1, char * str2) {
-    int i = strlen(str1) - 1;
-    int j = strlen(str2) - 1;
-    do {
-        if(*(str1+i) != *(str2+j)) {
-            return (*(str1+i) - *(str2+j));
-        }
-    i--;
-    j--;
-    } while (*(str1+i) != '\0' && *(str2+j) != '\0');
-    return 0;
-}
-void reversed_sort(char ** pointers) {
-    for (int i = 0; *(pointers + i) != NULL; i++) {
-        for (int j = 1; *(pointers + j) != NULL; j++) {
-            if (reversed_comparator(*(pointers + j - 1), *(pointers + j)) > 0) {
-                char * temp = *(pointers + j - 1);
-                *(pointers + j - 1) = *(pointers + j);
-                *(pointers + j) = temp;
-            }
-        }
-    }
-}
 int main(int argc, const char *argv[]) {
     FILE *pfile = NULL;
-    argc = 2;
+    //argc = 2;
     if (argc == 2) {
-        pfile = fopen("input_file.txt", "rb");
+        pfile = fopen(argv[1], "rb");
     } else {
         printf("no file, error");
+        return 0;
     }      //cannot open the file
 
     int len = give_size_of_file(pfile);
@@ -57,23 +37,23 @@ int main(int argc, const char *argv[]) {
     char **pointers = (char**)calloc(number_of_strcs, sizeof(char*));
     record_of_pointers(pointers, buffer,number_of_strcs, len);
 
-    //sort(pointers);
-
-    reversed_sort(pointers);
     FILE * file = fopen("output.txt", "wb");
+    sort(pointers);
+    record_to_file(pointers, file);
+    reversed_sort(pointers);
+    record_to_file(pointers, file);
 
     for(int i = 0; *(pointers + i) != NULL; i++) {
-        fwrite(*(pointers + i), 1, strlen(*(pointers + i)), file);
-        char newline = '\n';
-        fwrite(&newline, 1, 1, file);
-    }
-    char devider[] = "<----------------************------------------------devide---------------**********----------------------------->";
-        fwrite(&devider, strlen(devider), 1, file);
-    for(int i = 0; *(pointers + i) != 0; i++) {
-        puts(*(pointers + i));
-    }
+        for(int j = 1; *(pointers + j) != NULL; j++) {
+            if (*(pointers + j - 1) > *(pointers + j)) {
+                char * temp = *(pointers + j - 1);
+                *(pointers + j - 1) = *(pointers + j);
+                *(pointers + j) = temp;
 
-    reversed_sort(pointers);
+            }
+        }
+    }
+    record_to_file(pointers, file);
 
 
 
@@ -93,9 +73,9 @@ int cleaner(char * text) {
     for(int i = 0; *(text + i) != '\0'; i++) {
         if(*(text + i) == '\r') {
             count_arrays++;
-            i++;
             *(text + i) = '\0';
             *(text + 1 + i) = '\0';
+            i++;
             continue;
         }
         if(*(text + i) == '\n') {
@@ -135,6 +115,42 @@ void sort(char* * pointers) {
     for (int i = 0; *(pointers + i) != NULL; i++) {
         for (int j = 1; *(pointers + j) != NULL; j++) {
             if (comparator(*(pointers + j - 1), *(pointers + j)) > 0) {
+                char * temp = *(pointers + j - 1);
+                *(pointers + j - 1) = *(pointers + j);
+                *(pointers + j) = temp;
+            }
+        }
+    }
+}
+
+void record_to_file(char ** pointers, FILE * file) {
+    for(int i = 0; *(pointers + i) != NULL; i++) {
+        fwrite(*(pointers + i), 1, strlen(*(pointers + i)), file);
+        char newline = '\n';
+        fwrite(&newline, 1, 1, file);
+    }
+    char devider[] = "<----------------(:*******:)------------------------devide---------------(:**********:)----------------------------->";
+    fwrite(&devider, strlen(devider), 1, file);
+    char newline = '\n';
+    fwrite(&newline, 1, 1, file);
+}
+
+int reversed_comparator(char * str1, char * str2) {
+    int i = strlen(str1) - 1;
+    int j = strlen(str2) - 1;
+    do {
+        if(*(str1+i) != *(str2+j)) {
+            return (*(str1+i) - *(str2+j));
+        }
+    i--;
+    j--;
+    } while (*(str1+i) != '\0' && *(str2+j) != '\0');
+    return 0;
+}
+void reversed_sort(char ** pointers) {
+    for (int i = 0; *(pointers + i) != NULL; i++) {
+        for (int j = 1; *(pointers + j) != NULL; j++) {
+            if (reversed_comparator(*(pointers + j - 1), *(pointers + j)) > 0) {
                 char * temp = *(pointers + j - 1);
                 *(pointers + j - 1) = *(pointers + j);
                 *(pointers + j) = temp;
