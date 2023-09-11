@@ -2,3 +2,4 @@
 *.o
 main
 xren.cpp
+.DS_Store
