@@ -1,8 +1,14 @@
 .Phony: start
-start: main.o
-	clang++ main.o -o main
+start: main.o sorts.o work_with_file.o
+	clang++ main.o sorts.o work_with_file.o -o main
 main.o: main.cpp
 	clang++ -c main.cpp
+sorts.o: sorts.cpp
+	clang++ -c sorts.cpp
+work_with_file.o: work_with_file.cpp
+	clang++ -c work_with_file.cpp
+
+
 
 
 
