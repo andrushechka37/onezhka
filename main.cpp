@@ -8,6 +8,13 @@
 // unite two sorts
 // rewrite comparator to work without trash
 // quicker sorts
+// OneginFile
+// [ FILE* input_...,
+//   String* ....
+//   char* buffer;
+//   ]
+// OneginFileCtor(OneginFile*, )
+// OneginFileDtor(OneginFile*)
 
 int give_size_of_file(FILE * file);
 int cleaner(char * text);
@@ -24,7 +31,7 @@ int main(int argc, const char *argv[]) {
     if (argc == 2) {
         pfile = fopen(argv[1], "rb");
     } else {
-        printf("no file, error");
+        printf("can not open file, error"); //
         return 0;
     }      //cannot open the file
 
@@ -38,11 +45,12 @@ int main(int argc, const char *argv[]) {
     record_of_pointers(pointers, buffer,number_of_strcs, len);
 
     FILE * file = fopen("output.txt", "wb");
-    sort(pointers);
+    sort(pointers);//check^
     record_to_file(pointers, file);
     reversed_sort(pointers);
     record_to_file(pointers, file);
 
+    // ??
     for(int i = 0; *(pointers + i) != NULL; i++) {
         for(int j = 1; *(pointers + j) != NULL; j++) {
             if (*(pointers + j - 1) > *(pointers + j)) {

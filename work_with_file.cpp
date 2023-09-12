@@ -4,9 +4,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
+
 int give_size_of_file(FILE * file) {
     struct stat buff;
-    fstat(fileno(file), &buff);
+    fstat(fileno(file), &buff); //check
     return buff.st_size;
 }
 
@@ -49,7 +50,7 @@ void record_to_file(char ** pointers, FILE * file) {
         char newline = '\n';
         fwrite(&newline, 1, 1, file);
     }
-    char devider[] = "<----------------(:*******:)------------------------devide---------------(:**********:)----------------------------->";
+    char devider[] = "<----------------(:*******:)------------------------divide---------------(:**********:)----------------------------->";
     fwrite(&devider, strlen(devider), 1, file);
     char newline = '\n';
     fwrite(&newline, 1, 1, file);

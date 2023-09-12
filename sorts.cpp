@@ -1,7 +1,16 @@
 #include <string.h>
 #include <stdio.h>
+
+// struct String
+// {
+//    char* str;
+//    int len;
+//}
+// String* strings = calloc(...);
+// strings[0].len
+
 int reversed_comparator(char * str1, char * str2) {
-    int i = strlen(str1) - 1;
+    int i = strlen(str1) - 1; //save len
     int j = strlen(str2) - 1;
     do {
         if(*(str1+i) != *(str2+j)) {
@@ -35,7 +44,7 @@ int comparator(char * str1, char * str2) {
     return 0;
 }
 
-void sort(char* * pointers) {
+void sort(char** pointers) {
     for (int i = 0; *(pointers + i) != NULL; i++) {
         for (int j = 1; *(pointers + j) != NULL; j++) {
             if (comparator(*(pointers + j - 1), *(pointers + j)) > 0) {
