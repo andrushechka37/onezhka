@@ -9,6 +9,11 @@
 // String* strings = calloc(...);
 // strings[0].len
 
+struct string {
+    char * pointer;
+    int len;
+};
+
 int reversed_comparator(char * str1, char * str2) {
     int i = strlen(str1) - 1; //save len
     int j = strlen(str2) - 1;
@@ -44,13 +49,13 @@ int comparator(char * str1, char * str2) {
     return 0;
 }
 
-void sort(char** pointers) {
-    for (int i = 0; *(pointers + i) != NULL; i++) {
-        for (int j = 1; *(pointers + j) != NULL; j++) {
-            if (comparator(*(pointers + j - 1), *(pointers + j)) > 0) {
-                char * temp = *(pointers + j - 1);
-                *(pointers + j - 1) = *(pointers + j);
-                *(pointers + j) = temp;
+void sort(string* *pointers_len) {
+    for (int i = 0; pointers_len[i]->pointer != NULL; i++) {
+        for (int j = 1; pointers_len[j]->pointer != NULL; j++) {
+            if (comparator(pointers_len[j - 1]->pointer, pointers_len[j]->pointer) > 0) {
+                char * temp = pointers_len[j - 1]->pointer;
+                pointers_len[j - 1]->pointer = pointers_len[j]->pointer;
+                pointers_len[j]->pointer = temp;
             }
         }
     }
