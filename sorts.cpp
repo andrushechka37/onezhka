@@ -1,31 +1,28 @@
 #include <string.h>
 #include <stdio.h>
 
-// struct String
-// {
-//    char* str;
-//    int len;
-//}
-// String* strings = calloc(...);
-// strings[0].len
-// unite two sorts
-// rewrite comparator to work without trash
-// quicker sorts
-// OneginFileDtor(OneginFile*)
+// swap((void*), (void*), size_t)
+// swap(string* lhs, string* rhs)
+// {}
+// struct string* ptr
+// ptr->pointer =
+// *(ptr + i)
+// ptr[i]
+// (*ptr).pointer
 struct string {
     char * pointer;
     int len;
 };
 struct Onegin_file {
-    FILE * pfile;
-    const char * txtfile;
+    FILE * input_file;
+    const char * input_file_name;
     char* *pointers;
     char* buffer;
     struct string* pointers_len;
 };
 
 int reversed_comparator(string* str1, string* str2) {
-    int i = str1.len - 1; //save len
+    int i = str1.len - 1;
     int j = str2.len - 1;
     do {
         if(*(str1.pointer+i) != *(str2.pointer+j)) {
@@ -59,7 +56,7 @@ int comparator(char * str1, char * str2) {
     return 0;
 }
 
-void sort(string* *pointers_len) {
+void sort_strings_by_begin(string* *pointers_len) {
     for (int i = 0; pointers_len[i]->pointer != NULL; i++) {
         for (int j = 1; pointers_len[j]->pointer != NULL; j++) {
             if (comparator(pointers_len[j - 1]->pointer, pointers_len[j]->pointer) > 0) {

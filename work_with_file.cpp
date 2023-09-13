@@ -11,7 +11,7 @@ int give_size_of_file(FILE * file) {
     return buff.st_size;
 }
 
-int cleaner(char * text) {
+int split_to_c_str(char * text) {
     int count_arrays = 0;
     for(int i = 0; *(text + i) != '\0'; i++) {
         if(*(text + i) == '\r') {
