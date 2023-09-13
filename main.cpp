@@ -5,16 +5,6 @@
 #include <unistd.h>
 #include <string.h>
 
-// unite two sorts
-// rewrite comparator to work without trash
-// quicker sorts
-// OneginFile
-// [ FILE* input_...,
-//   String* ....
-//   char* buffer;
-//   ]
-// OneginFileCtor(OneginFile*, )
-// OneginFileDtor(OneginFile*)
 struct string {
     char * pointer;
     int len;
@@ -29,6 +19,40 @@ struct Onegin_file {
 int give_size_of_file(FILE * file);
 int cleaner(char * text);
 void record_of_pointers(char **pointers, char * text, int number_of_strcs, int len);
+void OneginFileCtor(Onegin_file * onezhka);
+
+void sort(Onegin_file * onezhka);
+int comparator(char * str1, char * str2);
+void record_to_file(Onegin_file * onezhka, FILE * file);
+int reversed_comparator(string *str1, string* str2);
+void reversed_sort(Onegin_file * onezhka);
+
+
+int main(int argc, const char *argv[]) {
+    Onegin_file onezhka = {NULL, "input.txt", NULL, NULL, NULL};
+    OneginFileCtor(&onezhka);
+    FILE * file = fopen("output.txt", "wb");
+    sort(&onezhka);//check^
+    record_to_file(&onezhka, file);
+    reversed_sort(&onezhka);
+    record_to_file(&onezhka, file);
+
+//     // ??
+//     for(int i = 0; *(pointers + i) != NULL; i++) {
+//         for(int j = 1; *(pointers + j) != NULL; j++) {
+//             if (*(pointers + j - 1) > *(pointers + j)) {
+//                 char * temp = *(pointers + j - 1);
+//                 *(pointers + j - 1) = *(pointers + j);
+//                 *(pointers + j) = temp;
+//
+//             }
+//         }
+//     }
+//     record_to_file(pointers, file);
+}
+
+
+
 void OneginFileCtor(Onegin_file * onezhka) {
     onezhka->pfile = fopen(onezhka->txtfile, "rb");
     if(onezhka->pfile == NULL) {
@@ -47,62 +71,6 @@ void OneginFileCtor(Onegin_file * onezhka) {
     }
 
 }
-
-void sort(struct string * pointers_len[]);
-int comparator(char * str1, char * str2);
-void record_to_file(Onegin_file * onezhka, FILE * file);
-// int reversed_comparator(char * str1, char * str2);
-// void reversed_sort(char ** pointers);
-
-int main(int argc, const char *argv[]) {
-//     FILE *pfile = NULL;
-//     //argc = 2;
-//     if (argc == 2) {
-//         pfile = fopen(argv[1], "rb");
-//     } else {
-//         printf("can not open file, error"); //
-//         return 0;
-//     }      //cannot open the file
-//
-//     int len = give_size_of_file(pfile);
-//     char *buffer = (char*)calloc(len, sizeof(char) + 1);
-//
-//     fread(buffer, 1, len, pfile);
-//
-//     int number_of_strcs = cleaner(buffer);
-//     char **pointers = (char**)calloc(number_of_strcs, sizeof(char*));
-//     record_of_pointers(pointers, buffer,number_of_strcs, len);
-    Onegin_file onezhka = {NULL, "input.txt", NULL, NULL, NULL};
-    OneginFileCtor(&onezhka);
-    int i = 0;
-    while(onezhka.pointers_len[i].pointer != NULL) {
-        puts(onezhka.pointers_len[i].pointer);
-        i++;
-    }
-
-    FILE * file = fopen("output.txt", "wb");
-    sort(&onezhka.pointers_len);//check^
-    record_to_file(&onezhka, file);
-    // reversed_sort(pointers);
-    // record_to_file(pointers, file);
-
-//     // ??
-//     for(int i = 0; *(pointers + i) != NULL; i++) {
-//         for(int j = 1; *(pointers + j) != NULL; j++) {
-//             if (*(pointers + j - 1) > *(pointers + j)) {
-//                 char * temp = *(pointers + j - 1);
-//                 *(pointers + j - 1) = *(pointers + j);
-//                 *(pointers + j) = temp;
-//
-//             }
-//         }
-//     }
-//     record_to_file(pointers, file);
-}
-
-
-
-
 
 
 
@@ -177,13 +145,46 @@ int comparator(char * str1, char * str2) {
     return 0;
 }
 
-void sort(struct string * pointers_len[]) {
-    for (int i = 0; pointers_len[i]->pointer != NULL; i++) {
-        for (int j = 1; pointers_len[j]->pointer != NULL; j++) {
-            if (comparator(pointers_len[j - 1]->pointer, pointers_len[j]->pointer) > 0) {
-                char * temp = pointers_len[j - 1]->pointer;
-                pointers_len[j - 1]->pointer = pointers_len[j]->pointer;
-                pointers_len[j]->pointer = temp;
+void sort(Onegin_file * onezhka) {
+    for (int i = 0; onezhka->pointers_len[i].pointer != NULL; i++) {
+        for (int j = 1; onezhka->pointers_len[j].pointer != NULL; j++) {
+            if (comparator(onezhka->pointers_len[j - 1].pointer, onezhka->pointers_len[j].pointer) > 0) {
+                char * temp = onezhka->pointers_len[j - 1].pointer;
+                onezhka->pointers_len[j - 1].pointer = onezhka->pointers_len[j].pointer;
+                onezhka->pointers_len[j].pointer = temp;
+                int temp_len = onezhka->pointers_len[j - 1].len;
+                onezhka->pointers_len[j - 1].len = onezhka->pointers_len[j].len;
+                onezhka->pointers_len[j].len = temp_len;
+            }
+        }
+    }
+}
+
+
+
+int reversed_comparator(string str1, string str2) {
+    int i = str1.len - 1; //save len
+    int j = str2.len - 1;
+    do {
+        printf("%c   %c     \n", *(str1.pointer+i),*(str2.pointer+j) );
+        if(*(str1.pointer+i) != *(str2.pointer+j)) {
+            return (*(str1.pointer+i) - *(str2.pointer+j));
+        }
+    i--;
+    j--;
+    } while (*(str1.pointer+i) != '\0' && *(str2.pointer+j) != '\0');
+    return 0;
+}
+void reversed_sort(Onegin_file * onezhka) {
+    for (int i = 0; onezhka->pointers_len[i].pointer != NULL; i++) {
+        for (int j = 1; onezhka->pointers_len[j].pointer != NULL; j++) {
+            if (reversed_comparator(onezhka->pointers_len[j - 1], onezhka->pointers_len[j]) > 0) {
+                char * temp = onezhka->pointers_len[j - 1].pointer;
+                onezhka->pointers_len[j - 1].pointer = onezhka->pointers_len[j].pointer;
+                onezhka->pointers_len[j].pointer = temp;
+                int temp_len = onezhka->pointers_len[j - 1].len;
+                onezhka->pointers_len[j - 1].len = onezhka->pointers_len[j].len;
+                onezhka->pointers_len[j].len = temp_len;
             }
         }
     }
