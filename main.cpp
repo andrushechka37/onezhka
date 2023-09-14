@@ -6,15 +6,13 @@
 #include <string.h>
 
 //parse to files
-// unite two sorts
-// rewrite comparator to work without trash
+
 // quicker sorts(shell sort)
-// OneginFileDtor(OneginFile*)
+// rewrite comparator to work without trash
+
+
 //work with errors
-//split to str work with onegin file
-//static functions
-//record of pointers with onegin and rewrite
-//swap
+
 struct string {
     char * pointer; //maybe rename
     int len;
@@ -30,42 +28,29 @@ struct Onegin_file {
     FILE * output_file;
 };
 
-//void swap(string* lhs, string* rhs);
-int give_size_of_file(FILE * file);
-int split_to_c_str(char * text);
-void record_of_pointers(char **pointers, char * text, int number_of_strcs, int len);
+static int give_size_of_file(FILE * file);
+static int split_to_c_str(Onegin_file * onezhka);
+static void record_of_pointers(char **pointers, char * text, int number_of_strcs, int len);
 void OneginFileCtor(Onegin_file * onezhka, const char * input_file_name, const char * output_file_name);
 
-void sort_strings_by_begin(Onegin_file * onezhka);
-int comparator(char * str1, char * str2);
-void record_to_file(Onegin_file * onezhka, FILE * file);
-int reversed_comparator(string *str1, string* str2);
-void reversed_sort(Onegin_file * onezhka);
-
+void all_sorts_in_one(Onegin_file * onezhka, int (*comparator)(string, string));
+int comparator(string str1, string str2);
+void record_to_file(Onegin_file * onezhka);
+int reversed_comparator(string str1, string str2);
+void Onegin_fileDtor(Onegin_file * onezhka);
 
 int main(int argc, const char *argv[]) {
     Onegin_file onezhka = {};
     OneginFileCtor(&onezhka, "input.txt", "output.txt");
 
 
-    sort_strings_by_begin(&onezhka);//check^
-    record_to_file(&onezhka, onezhka.output_file);
+    all_sorts_in_one(&onezhka, comparator);//check^
+    record_to_file(&onezhka);
 
-    reversed_sort(&onezhka);
-    record_to_file(&onezhka, onezhka.output_file);
+    all_sorts_in_one(&onezhka, reversed_comparator);
+    record_to_file(&onezhka);
 
-//     // ??
-//     for(int i = 0; *(pointers + i) != NULL; i++) {
-//         for(int j = 1; *(pointers + j) != NULL; j++) {
-//             if (*(pointers + j - 1) > *(pointers + j)) {
-//                 char * temp = *(pointers + j - 1);
-//                 *(pointers + j - 1) = *(pointers + j);
-//                 *(pointers + j) = temp;
-//
-//             }
-//         }
-//     }
-//     record_to_file(pointers, file);
+    Onegin_fileDtor(&onezhka);
 }
 
 
@@ -87,7 +72,7 @@ void OneginFileCtor(Onegin_file * onezhka, const char * input_file_name, const c
 
     // MEM_ALLOC_ERROR
     fread(onezhka->buffer, 1, len, onezhka->input_file);
-    int number_of_strcs = split_to_c_str(onezhka->buffer);
+    int number_of_strcs = split_to_c_str(onezhka);
     onezhka->pointers = (char**)calloc(number_of_strcs, sizeof(char*));
 
     record_of_pointers(onezhka->pointers, onezhka->buffer,number_of_strcs, len);
@@ -102,6 +87,13 @@ void OneginFileCtor(Onegin_file * onezhka, const char * input_file_name, const c
 }
 
 
+void Onegin_fileDtor(Onegin_file * onezhka) {
+    fclose(onezhka->input_file);
+    fclose(onezhka->output_file);
+    free(onezhka->pointers_len);
+    free(onezhka->pointers);
+    free(onezhka->buffer);
+}
 
 
 
@@ -112,32 +104,31 @@ void OneginFileCtor(Onegin_file * onezhka, const char * input_file_name, const c
 
 
 
-
-int give_size_of_file(FILE * file) {
+static int give_size_of_file(FILE * file) {
     struct stat buff;
     fstat(fileno(file), &buff);
     return buff.st_size;
 }
 
-int split_to_c_str(char * text) {
+static int split_to_c_str(Onegin_file * onezhka) {
     int count_arrays = 0;
-    for(int i = 0; *(text + i) != '\0'; i++) {
-        if(*(text + i) == '\r') {
+    for(int i = 0; onezhka->buffer[i] != '\0'; i++) {
+        if(onezhka->buffer[i] == '\r') {
             count_arrays++;
-            *(text + i) = '\0';
-            *(text + 1 + i) = '\0';
+            onezhka->buffer[i] = '\0';
+            onezhka->buffer[i + 1] = '\0';
             i++;
             continue;
         }
-        if(*(text + i) == '\n') {
-            *(text + i) = '\0';
+        if(onezhka->buffer[i] == '\n') {
+            onezhka->buffer[i] = '\0';
             count_arrays++;
         }
     }
     return count_arrays + 1;
 }
 
-void record_of_pointers(char **pointers, char * text, int number_of_strcs, int len) {
+static void record_of_pointers(char **pointers, char * text, int number_of_strcs, int len) {
     int i = 1;
     int j = 1;
     *pointers = text;
@@ -151,46 +142,40 @@ void record_of_pointers(char **pointers, char * text, int number_of_strcs, int l
     }
 }
 
-void record_to_file(Onegin_file * onezhka, FILE * file) {
+void record_to_file(Onegin_file * onezhka) {
     for(int i = 0; onezhka->pointers_len[i].pointer != NULL; i++) {
-        fwrite(onezhka->pointers_len[i].pointer, 1, strlen(onezhka->pointers_len[i].pointer), file);
+        fwrite(onezhka->pointers_len[i].pointer, 1, strlen(onezhka->pointers_len[i].pointer), onezhka->output_file);
         char newline = '\n';
-        fwrite(&newline, 1, 1, file);
+        fwrite(&newline, 1, 1, onezhka->output_file);
     }
     char divider[] = "<----------------(:*******:)------------------------divide---------------(:*******:)----------------------------->";
-    fwrite(&divider, strlen(divider), 1, file);
+    fwrite(&divider, strlen(divider), 1, onezhka->output_file);
     char newline = '\n';
-    fwrite(&newline, 1, 1, file);
+    fwrite(&newline, 1, 1, onezhka->output_file);
 }
 
-int comparator(char * str1, char * str2) {
+int comparator(string str1, string str2) {
     int i = 0;
     do {
-        if(*(str1+i) != *(str2+i)) {
-            return (*(str1+i) - *(str2+i));
+        if(*(str1.pointer+i) != *(str2.pointer+i)) {
+            return (*(str1.pointer+i) - *(str2.pointer+i));
         }
     i++;
-    } while (*(str1+i) != '\0' && *(str2+i) != '\0');
+    } while (*(str1.pointer+i) != '\0' && *(str2.pointer+i) != '\0');
     return 0;
 }
 
 
-// void swap(string* lhs, string* rhs) {
-//     string* temp = lhs;
-//     lhs = rhs;
-//     rhs = temp;
-// }
-void sort_strings_by_begin(Onegin_file * onezhka) {
+void swap(string* lhs, string* rhs) {
+    string temp = *lhs;
+    *lhs = *rhs;
+    *rhs = temp;
+}
+void all_sorts_in_one(Onegin_file * onezhka, int (*comparator)(string, string)) {
     for (int i = 0; onezhka->pointers_len[i].pointer != NULL; i++) {
         for (int j = 1; onezhka->pointers_len[j].pointer != NULL; j++) {
-            if (comparator(onezhka->pointers_len[j - 1].pointer, onezhka->pointers_len[j].pointer) > 0) {
-                //swap(&onezhka->pointers_len[j - 1], &onezhka->pointers_len[j]);
-                char * temp = onezhka->pointers_len[j - 1].pointer;
-                onezhka->pointers_len[j - 1].pointer = onezhka->pointers_len[j].pointer;
-                onezhka->pointers_len[j].pointer = temp;
-                int temp_len = onezhka->pointers_len[j - 1].len;
-                onezhka->pointers_len[j - 1].len = onezhka->pointers_len[j].len;
-                onezhka->pointers_len[j].len = temp_len;
+            if (comparator(onezhka->pointers_len[j - 1], onezhka->pointers_len[j]) > 0) {
+                swap(&onezhka->pointers_len[j - 1], &onezhka->pointers_len[j]);
             }
         }
     }
@@ -209,19 +194,4 @@ int reversed_comparator(string str1, string str2) {
     j--;
     } while (*(str1.pointer+i) != '\0' && *(str2.pointer+j) != '\0');
     return 0;
-}
-
-void reversed_sort(Onegin_file * onezhka) {
-    for (int i = 0; onezhka->pointers_len[i].pointer != NULL; i++) {
-        for (int j = 1; onezhka->pointers_len[j].pointer != NULL; j++) {
-            if (reversed_comparator(onezhka->pointers_len[j - 1], onezhka->pointers_len[j]) > 0) {
-                char * temp = onezhka->pointers_len[j - 1].pointer;
-                onezhka->pointers_len[j - 1].pointer = onezhka->pointers_len[j].pointer;
-                onezhka->pointers_len[j].pointer = temp;
-                int temp_len = onezhka->pointers_len[j - 1].len;
-                onezhka->pointers_len[j - 1].len = onezhka->pointers_len[j].len;
-                onezhka->pointers_len[j].len = temp_len;
-            }
-        }
-    }
 }
