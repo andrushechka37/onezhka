@@ -21,49 +21,49 @@ struct Onegin_file {
     struct string* pointers_len;
 };
 
-int reversed_comparator(string* str1, string* str2) {
+int comparator(string str1, string str2) {
+    int i = 0;
+    do {
+        if(*(str1.pointer+i) != *(str2.pointer+i)) {
+            return (*(str1.pointer+i) - *(str2.pointer+i));
+        }
+    i++;
+    } while (*(str1.pointer+i) != '\0' && *(str2.pointer+i) != '\0');
+    return 0;
+}
+
+
+void swap(string* lhs, string* rhs) {
+    string temp = *lhs;
+    *lhs = *rhs;
+    *rhs = temp;
+}
+void all_sorts_in_one(Onegin_file * onezhka, int (*comparator)(string, string)) {
+    for (int i = 0; onezhka->pointers_len[i].pointer != NULL; i++) {
+        for (int j = 1; onezhka->pointers_len[j].pointer != NULL; j++) {
+            if (comparator(onezhka->pointers_len[j - 1], onezhka->pointers_len[j]) > 0) {
+                swap(&onezhka->pointers_len[j - 1], &onezhka->pointers_len[j]);
+            }
+        }
+    }
+}
+
+
+
+int reversed_comparator(string str1, string str2) {
     int i = str1.len - 1;
     int j = str2.len - 1;
     do {
         if(*(str1.pointer+i) != *(str2.pointer+j)) {
-            return (*(str1.pointer+i) - *(str2->pointer+j));
+            return (*(str1.pointer+i) - *(str2.pointer+j));
         }
     i--;
     j--;
     } while (*(str1.pointer+i) != '\0' && *(str2.pointer+j) != '\0');
     return 0;
 }
-void reversed_sort(Onegin_file * onezhka) {
-    for (int i = 0; onezhka->pointers_len[i].pointer != NULL; i++) {
-        for (int j = 1; onezhka->pointers_len[j].pointer != NULL; j++) {
-            if (reversed_comparator(onezhka->pointers_len[j - 1].pointer, onezhka->pointers_len[j].pointer > 0)) {
-                char * temp = onezhka->pointers_len[j - 1].pointer;
-                onezhka->pointers_len[j - 1].pointer = onezhka->pointers_len[j].pointer;
-                onezhka->pointers_len[j].pointer = temp;
-            }
-        }
-    }
-}
 
-int comparator(char * str1, char * str2) {
-    int i = 0;
-    do {
-        if(*(str1+i) != *(str2+i)) {
-            return (*(str1+i) - *(str2+i));
-        }
-    i++;
-    } while (*(str1+i) != '\0' && *(str2+i) != '\0');
-    return 0;
-}
+int comparator_for_pointers(string str1, string str2) {
+    return str1.pointer-str2.pointer;
 
-void sort_strings_by_begin(string* *pointers_len) {
-    for (int i = 0; pointers_len[i]->pointer != NULL; i++) {
-        for (int j = 1; pointers_len[j]->pointer != NULL; j++) {
-            if (comparator(pointers_len[j - 1]->pointer, pointers_len[j]->pointer) > 0) {
-                char * temp = pointers_len[j - 1]->pointer;
-                pointers_len[j - 1]->pointer = pointers_len[j]->pointer;
-                pointers_len[j]->pointer = temp;
-            }
-        }
-    }
 }
