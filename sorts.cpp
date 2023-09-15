@@ -9,10 +9,12 @@
 // *(ptr + i)
 // ptr[i]
 // (*ptr).pointer
+
 struct string {
     char * pointer;
     int len;
 };
+
 struct Onegin_file {
     FILE * input_file;
     const char * input_file_name;
@@ -32,13 +34,13 @@ int comparator(string str1, string str2) {
     return 0;
 }
 
-
 void swap(string* lhs, string* rhs) {
     string temp = *lhs;
     *lhs = *rhs;
     *rhs = temp;
 }
-void all_sorts_in_one(Onegin_file * onezhka, int (*comparator)(string, string)) {
+
+void sorts(Onegin_file * onezhka, int (*comparator)(string, string)) {
     for (int i = 0; onezhka->pointers_len[i].pointer != NULL; i++) {
         for (int j = 1; onezhka->pointers_len[j].pointer != NULL; j++) {
             if (comparator(onezhka->pointers_len[j - 1], onezhka->pointers_len[j]) > 0) {
@@ -65,5 +67,4 @@ int reversed_comparator(string str1, string str2) {
 
 int comparator_for_pointers(string str1, string str2) {
     return str1.pointer-str2.pointer;
-
 }

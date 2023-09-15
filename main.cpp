@@ -6,7 +6,9 @@
 #include <string.h>
 
 // quicker sorts(shell sort)
-// rewrite comparator to work without tras
+
+// rewrite comparator to work without trash
+
 //work with errors
 
 struct string {
@@ -17,14 +19,17 @@ struct string {
 struct Onegin_file {
     FILE * input_file;
     const char * input_file_name;
+
     char* *pointers;
-    char* buffer;
     struct string* pointers_len;
+    char* buffer;
+
     const char * output_file_name;
     FILE * output_file;
 };
 
-void all_sorts_in_one(Onegin_file * onezhka, int (*comparator)(string, string));
+void sorts(Onegin_file * onezhka, int (*comparator)(string, string));
+
 int comparator(string str1, string str2);
 int reversed_comparator(string str1, string str2);
 int comparator_for_pointers(string str1, string str2);
@@ -37,14 +42,13 @@ int main(int argc, const char *argv[]) {
     Onegin_file onezhka = {};
     OneginFileCtor(&onezhka, argv[1], argv[2]);
 
-
-    all_sorts_in_one(&onezhka, comparator);//check^
+    sorts(&onezhka, comparator); // check^
     record_to_file(&onezhka);
 
-    all_sorts_in_one(&onezhka, reversed_comparator);
+    sorts(&onezhka, reversed_comparator);
     record_to_file(&onezhka);
 
-    all_sorts_in_one(&onezhka, comparator_for_pointers);
+    sorts(&onezhka, comparator_for_pointers);
     record_to_file(&onezhka);
 
     Onegin_fileDtor(&onezhka);

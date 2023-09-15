@@ -20,9 +20,7 @@ struct Onegin_file {
     FILE * output_file;
 };
 
-// enum OneginFileError??
-
-static int give_size_of_file(FILE * file);
+static int get_size_of_file(FILE * file);
 static int split_to_c_str(Onegin_file * onezhka);
 static void record_of_pointers(char **pointers, char * text, int number_of_strcs, int len);
 
@@ -31,13 +29,12 @@ void OneginFileCtor(Onegin_file * onezhka, const char * input_file_name, const c
     onezhka->output_file_name = output_file_name;
     onezhka->input_file = fopen(onezhka->input_file_name, "rb");
 
-    // INPUT_FILE_OPEN_ERROR = -100
+    // INPUT_FILE_OPEN_ERROR = -1
     if(onezhka->input_file == NULL) {
         return;
     }
 
-    // get_file_size
-    int len = give_size_of_file(onezhka->input_file);
+    int len = get_size_of_file(onezhka->input_file);
     onezhka->buffer = (char*)calloc(len + 1, sizeof(char));
 
     // MEM_ALLOC_ERROR
@@ -56,7 +53,7 @@ void OneginFileCtor(Onegin_file * onezhka, const char * input_file_name, const c
 
 }
 
-static int give_size_of_file(FILE * file) {
+static int get_size_of_file(FILE * file) {
     struct stat buff;
     fstat(fileno(file), &buff);
     return buff.st_size;
@@ -97,6 +94,11 @@ static void record_of_pointers(char **pointers, char * text, int number_of_strcs
 void Onegin_fileDtor(Onegin_file * onezhka) {
     fclose(onezhka->input_file);
     fclose(onezhka->output_file);
+
+    for(int i = 0; onezhka->pointers_len[i].pointer != NULL; i++) {
+        onezhka->pointers_len[i].pointer = NULL;
+    }
+
     free(onezhka->pointers_len);
     free(onezhka->pointers);
     free(onezhka->buffer);
