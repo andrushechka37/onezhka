@@ -1,4 +1,7 @@
 .Phony: start
+#^~~~~ capitalize! .PHONY
+
+# Start doesn't start
 start: main.o sorts.o work_with_file.o
 	clang++ main.o sorts.o work_with_file.o -o main
 main.o: main.cpp
@@ -12,6 +15,8 @@ work_with_file.o: work_with_file.cpp
 
 
 
+
+# TODO: What is this?
 
 # .PHONY: start
 # start: main.o check.o solve.o work_with_command_line.o
